@@ -3,6 +3,7 @@ import React, {
   useEffect
 } from 'react';
 import WebViewer from '@pdftron/pdfjs-express';
+import { xfdfString } from './xfdfDataString';
 
 
 import './App.css';
@@ -113,23 +114,22 @@ function App() {
           filename: file.name
         });
       });
-      docViewer.on('documentLoaded', async () => {
+      docViewer.on('annotationsLoaded', async () => {
         const documentStream = await docViewer.getDocument().getFileData({});
         documentBlob = new Blob([documentStream], {
           type: 'application/pdf',
         });
-        annotManager.on('fieldChanged', (field, value) => {
-          console.log('Field changed: ' + field.name + ', ' + value);
-        });
+        // console.log(typeof xfdfString, 'xfdf')
+        await annotManager.importAnnotations(xfdfString);
       });
       saveBlob.addEventListener('click', async () => {
         xfdfData = await annotManager.exportAnnotations();
         // saveBlobToServer(documentBlob);
-        // console.log(xfdfData);
+        console.log(xfdfData);
       });
       loadBlob.addEventListener('click', async () => {
         // annotManager.importAnnotations(xfdfData);
-        await annotManager.importAnnotations(xfdfData);
+        await annotManager.importAnnotations(xfdfString);
         // const getCommand = await annotManager.exportAnnotCommand();
         // console.log(getCommand);
         // instance.loadDocument(documentBlob, {
