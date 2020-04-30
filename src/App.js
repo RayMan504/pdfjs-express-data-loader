@@ -6,6 +6,7 @@ import WebViewer from '@pdftron/pdfjs-express';
 import {xfdfString} from './xfdfDataString'
 import './App.css';
 import {xml2json} from './helpers/xmlJson';
+import {json2xml} from './helpers/jsonXml';
 import {
   jsonMapper
 } from './helpers/jsonMapper';
@@ -36,10 +37,14 @@ function App() {
       const { docViewer, annotManager, Annotations } = instance;
       const xmlDom = showXml(xfdfString);
       const xmlJson = xml2json(xmlDom, "");
-      console.log(jsonMapper(xmlJson, cft), 'whats this');
+      const mappedMockData = jsonMapper(xmlJson, cft);
       // console.log(xml2json(showXml(xfdfString), ""));
       docViewer.on("annotationsLoaded", async () => {
-        annotManager.importAnnotations(xfdfString);
+        console.log(json2xml(mappedMockData, ""),'hit')
+        const updatedXml = json2xml(mappedMockData, "");
+        await annotManager.importAnnotations(updatedXml, "");
+        // await annotManager.importAnnotations(xfdfString);
+
       });
     });
   }, []);
